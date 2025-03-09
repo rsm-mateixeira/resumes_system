@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="resumes-container">
+    <h2>Resumes</h2>
+    <div class="resume-list">
+        {% for resume in resumes %}
+        <div class="resume-item">
+            <div class="resume-header">
+                <span>{{ resume.name }}</span>
+                <button class="toggle-btn" data-id="{{ resume.name|slugify }}">View</button>
+            </div>
+            <div class="resume-content" id="resume-{{ resume.name|slugify }}" style="display: none;">
+                <a href="{{ resume.url }}" target="_blank" class="resume-link">Open Resume</a>
+            </div>
+        </div>
+        {% empty %}
+        <p>No resumes found.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
