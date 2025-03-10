@@ -5,8 +5,8 @@ from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.oauth2.credentials import Credentials
 from langchain_community.document_loaders import PyPDFLoader
+from langchain_google_genai import GoogleGenerativeAI
 from dotenv import load_dotenv
-from langchain.chat_models import init_chat_model
 from pathlib import Path
 import json
 
@@ -20,10 +20,7 @@ for parent in current_path.parents:
         load_dotenv(dotenv_path=env_file)
         break
 
-# Now you can access the API key
-os.getenv("OPENAI_API_KEY")
-
-llm = init_chat_model("gpt-4o")
+llm = GoogleGenerativeAI(model="models/gemini-2.0-flash", google_api_key=os.getenv("GOOGLE_API_KEY"))
 
 SCOPES = ["https://www.googleapis.com/auth/drive"]
 
@@ -45,9 +42,8 @@ def authenticate():
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                "credentials.json", SCOPES
-            )
+            CREDENTIALS_PATH = os.path.join(os.path.dirname(__file__), "credentials.json")
+            flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_PATH, SCOPES)
             creds = flow.run_local_server(port=0)
         with open("token.json", "w") as token:
             token.write(creds.to_json())
@@ -108,7 +104,7 @@ def summarize_resume(resume):
         {resume}
     """
 
-    return llm.invoke(prompt).content
+    return llm.invoke(prompt).strip()
 
 def main():
     try:

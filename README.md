@@ -52,7 +52,7 @@ Make sure you have a .env file in the root directory with the following informat
 
 ```python
 
-GOOGLE_API_KEY=your_google_api_key_here
+GOOGLE_API_KEY="your_google_api_key_here"
 
 ```
 
