@@ -144,7 +144,7 @@ This test is successful.
 
 ## Templates
 
-- **layout**: Page layout (top bar), to be reused on all pages.
+- **layout.html**: Page layout (top bar), to be reused on all pages.
 - **home.html**: Simple interface for the user to interact with chat.
 - **resumes_page.html**: List of resumes, with possibility of viewing them.
 
