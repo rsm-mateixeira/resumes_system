@@ -22,7 +22,8 @@ This solution is ideal for recruiters, allowing them to input candidates resumes
 - **Candidate Ranking** – Retrieves the most relevant resumes based on similarity scores.  
 - **Django API Integration** – Provides an API for users to submit job descriptions and retrieve matched candidates.  
 - **Interactive Chatbot** – Supports queries to fetch results dynamically.  
-- **Downloadable Resumes** – Generates downloadable links for the shortlisted resumes.  
+- **Downloadable Resumes** – Generates downloadable links for the shortlisted resumes.
+- **Resumes Page** - A page displaying all available resumes for viewing.
 
 ---
 
