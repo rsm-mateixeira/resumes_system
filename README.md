@@ -82,7 +82,7 @@ The files downloaded from the Google Cloud API are saved under app/static/files.
 
 ### functions.py
 
-Here is where I have most of the interactions between the functions I use with LangGraph, and also define AgentState to track the state I are during the process.
+Here is where I have most of the interactions between the functions I use with LangGraph, and also define AgentState to track the state I am during the process.
 
 Details:
 
@@ -102,8 +102,8 @@ AgentState specifications:
 Functions:
 
 - **check_context**: Understands if the new message is related to an old topic, or if it is a new job description.
-- **first_router**: With the output from the function check_function, which was saved at our AgentState, we understand if we need to go to the function find_top_5_best_fit or retrieve_request.
-- **find_top_5_best_fit**: Transforms the job description in a format to better match the format of the candidates information. Based on the similarity_search, retrieves the 5 most similar values, which are the best fit for the position. Saves the information in our AgentState.
+- **first_router**: With the output from the check_function, which was saved at our AgentState, we understand if we need to go to the function find_top_5_best_fit or retrieve_request.
+- **find_top_5_best_fit**: Transforms the job description in a format to better match the format of the candidates information. Based on the similarity_search, retrieves the top 5 most similar values, which are the best fit for the position. Saves the information in our AgentState.
 - **candidates_description**: Gets the information from each of the selected candidates in the AgentState.
 - **retrieve_request**: Based on the request, understands if we want to get more details of the retrieved candidates, or their resumes.
 - **get_details**: Gives more detailed information to the user about the candidates.
@@ -112,19 +112,27 @@ Functions:
 
 ### views.py
 
-Here is where all the magic happens. I start by creating our LangGraph State, and define a node for each of the functions created.
+Here is where all the magic happens. I start by creating our LangGraph state and defining a node for each of the functions created.
 
-Then, I set our entry point as the **check_context**, as this is the first action we need to take. I use a conditional edge, where based on the information produced on **check_context** and the route from our **first_router**, we take an action. Later, I have another conditional edge for one more decision, and the others are only normal edges. Our finish point is **create_answer**.
+#### LangGraph Workflow Description
 
-After this, I need to compile our graph, and the following graph is the representation of the workflow.
+I begin by setting the function **check_context** as the entry point. This function also serves as a conditional edge to determine whether the context is related to the last message or if it represents a new job description.
+
+- If it is a new job description, we retrieve the top 5 candidates that best match the job opportunity using **find_top_5_best_fit**, and then generate a summary description for each candidate using **candidates_description**. After this, we proceed to **create_answer**.
+- If it is related to the last message, we move to the function **retrieve_request**, which is also a conditional edge. Based on the request, it determines whether we should go to **get_details** to retrieve more information about the matched candidates or to **get_resumes_by_filename** if the user requests resumes. Both functions ultimately lead to create_answer.
+
+The function **create_answer** is our finish point, where, based on the retrieved information, we generate a response to display to the user.
+
+After this, the graph is compiled, and the following image represents the workflow:
 
 ![LangGraph Workflow](images_readme/image.png)
 
-The **home_view**, it's simply to route to our landing page.
+#### Views Functions
 
-The **chatbot_response**, it's the function I use for the message submissions and workflow call.
-
-The **resumes_page_view** is where I list all the resumes, for the user to access and open them.
+This file also contains the views that trigger our actions:
+- The **home_view**, it's simply to route to our landing page.
+- The **chatbot_response**, processes message submissions, calls the workflow, and returns responses.
+- The **resumes_page_view** is where I list all the resumes, for the user to access and open them.
 
 ### tests.py
 
@@ -136,7 +144,7 @@ This test is successful.
 
 ## Templates
 
-- **layout**: Page layout (top bar), to be reused on the other pages.
+- **layout**: Page layout (top bar), to be reused on all pages.
 - **home.html**: Simple interface for the user to interact with chat.
 - **resumes_page.html**: List of resumes, with possibility of viewing them.
 
@@ -148,11 +156,11 @@ This test is successful.
 
 #### Choosing LangChain, LangGraph, and Pydantic
 
-- Decided to use LangChain and LangGraph for structuring your AI workflow and handling state, along with Pydantic for enforcing data validation. These tools provide modular, scalable, and structured approaches to building LLM-powered applications while ensuring data integrity.
+- Decided to use LangChain and LangGraph for structuring the AI workflow, memory and handling state, along with Pydantic for enforcing data validation. These tools provide modular, scalable, and structured approaches to building LLM-powered applications while ensuring data integrity.
 
 #### Using Google Gemini
 
-- Based on the recommendation and my eagerness to learn more, I decided to use a LLM I never used before, Google Gemini, and also because of how fast the API is and leverage Google's text-embedding-004 model for better search capabilities and retrieval of relevant resumes.
+- Based on the recommendation and my eagerness to learn more, I decided to use/test a LLM I never used before, Google Gemini, and also because of how fast the API is and leverage Google's text-embedding-004 model for better search capabilities and retrieval of relevant resumes.
 
 #### Implementing a Stateful Approach for Conversation Handling
 
